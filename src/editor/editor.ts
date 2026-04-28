@@ -75,11 +75,17 @@ export function createEditor(
     selectedId = id;
     if (!id) {
       transformer.nodes([]);
+      transformer.visible(false);
+      transformer.listening(false);
       layer.draw();
       return;
     }
     const node = itemsGroup.findOne(`#${CSS.escape(id)}`) as Konva.Group | null;
-    if (node) transformer.nodes([node]);
+    if (node) {
+      transformer.nodes([node]);
+      transformer.visible(true);
+      transformer.listening(true);
+    }
     layer.draw();
   }
 
