@@ -55,7 +55,7 @@ export function createEditor(
     borderStroke: '#2563eb',
     borderStrokeWidth: 1,
   });
-  world.group.add(transformer);
+  layer.add(transformer);
 
   let layout: LayoutV1 = initialLayout;
   let selectedId: string | null = null;
