@@ -123,6 +123,17 @@ export function createEditor(
     onLayoutChange(layout);
   }
 
+  // Manual drag state (Konva's built-in drag breaks under Y-flip groups).
+  let dragState: {
+    node: Konva.Group;
+    startWorld: { x: number; y: number };
+    startNode: { x: number; y: number };
+  } | null = null;
+
+  function pointerToWorld(pointer: { x: number; y: number }) {
+    return itemsGroup.getAbsoluteTransform().copy().invert().point(pointer);
+  }
+
   function rebuildItems() {
     itemsGroup.destroyChildren();
     const sorted = [...layout.items].sort((a, b) => a.zIndex - b.zIndex);
@@ -139,24 +150,15 @@ export function createEditor(
     group.on('mousedown touchstart', (e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
       e.cancelBubble = true;
       setSelected(group.id());
-    });
 
-    group.on('dragstart', () => {
-      // no-op: stage is never draggable
-    });
-
-    group.on('dragmove', () => {
-      if (validateNode(group)) {
-        snapshotLastValid(group);
-      }
-    });
-
-    group.on('dragend', () => {
-      if (!validateNode(group)) {
-        revertToLastValid(group);
-      }
-      commitNode(group);
-      layer.draw();
+      const pointer = stage.getPointerPosition();
+      if (!pointer) return;
+      const wp = pointerToWorld(pointer);
+      dragState = {
+        node: group,
+        startWorld: wp,
+        startNode: { x: group.x(), y: group.y() },
+      };
     });
 
     group.on('transform', () => {
@@ -166,7 +168,6 @@ export function createEditor(
     });
 
     group.on('transformend', () => {
-      // Snap rotation to stable 45° increments.
       const snapped = Math.round(group.rotation() / 45) * 45;
       group.rotation(snapped);
 
@@ -177,6 +178,33 @@ export function createEditor(
       layer.draw();
     });
   }
+
+  // Manual drag: mousemove
+  stage.on('mousemove touchmove', () => {
+    if (!dragState) return;
+    const pointer = stage.getPointerPosition();
+    if (!pointer) return;
+    const wp = pointerToWorld(pointer);
+    dragState.node.position({
+      x: dragState.startNode.x + (wp.x - dragState.startWorld.x),
+      y: dragState.startNode.y + (wp.y - dragState.startWorld.y),
+    });
+    if (validateNode(dragState.node)) {
+      snapshotLastValid(dragState.node);
+    }
+    layer.batchDraw();
+  });
+
+  // Manual drag: mouseup
+  stage.on('mouseup touchend', () => {
+    if (!dragState) return;
+    if (!validateNode(dragState.node)) {
+      revertToLastValid(dragState.node);
+    }
+    commitNode(dragState.node);
+    dragState = null;
+    layer.batchDraw();
+  });
 
   // Selection on background (ignore transformer and its anchors)
   // Use click/tap so drag start on items is never affected.

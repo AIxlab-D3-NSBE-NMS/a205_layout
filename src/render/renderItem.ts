@@ -13,7 +13,7 @@ export function createItemNode(item: PlacedItem): ItemNode {
     rotation: item.rotationDeg,
     scaleX: item.scale.x,
     scaleY: item.scale.y,
-    draggable: true,
+    draggable: false,
     name: 'movable-item',
     id: item.id,
   });
