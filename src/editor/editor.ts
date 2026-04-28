@@ -153,8 +153,7 @@ export function createEditor(
   }
 
   function attachItemHandlers(group: Konva.Group) {
-    group.on('mousedown touchstart', (e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
-      e.cancelBubble = true;
+    group.on('mousedown touchstart', () => {
       setSelected(group.id());
 
       const pointer = stage.getPointerPosition();
@@ -212,22 +211,9 @@ export function createEditor(
     layer.batchDraw();
   });
 
-  // Selection on background (ignore transformer and its anchors)
-  // Use click/tap so drag start on items is never affected.
+  // Deselect only when clicking the empty stage background.
   stage.on('click tap', (e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
-    const target = e.target as Konva.Node;
-    if (!target) return;
-    let n: Konva.Node | null = target;
-    let isTransformer = false;
-    while (n) {
-      if (n === transformer) {
-        isTransformer = true;
-        break;
-      }
-      n = n.getParent();
-    }
-    if (isTransformer) return;
-    if (target === stage) setSelected(null);
+    if (e.target === stage) setSelected(null);
   });
 
   // Stage is never draggable (no empty-space pan). Zoom via wheel, pan via buttons only.
