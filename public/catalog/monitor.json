@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "name": "Interactive Monitor 150x30",
+  "color": "#616161",
+  "corners": [
+    { "x": 0, "y": 0 },
+    { "x": 150, "y": 0 },
+    { "x": 150, "y": 30 },
+    { "x": 0, "y": 30 }
+  ]
+}

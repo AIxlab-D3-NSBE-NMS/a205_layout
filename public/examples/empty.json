@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-01-01T00:00:00.000Z",
+  "room": {
+    "widthCm": 1000,
+    "heightCm": 800
+  },
+  "fixed": {
+    "pillar": {
+      "xCm": 300,
+      "yCm": 600,
+      "widthCm": 50,
+      "heightCm": 100
+    },
+    "doors": [
+      {
+        "id": "door-bottom",
+        "wall": "bottom",
+        "hingeCm": { "x": 450, "y": 0 },
+        "widthCm": 90,
+        "opensInward": true,
+        "hingeSide": "left"
+      },
+      {
+        "id": "door-left",
+        "wall": "left",
+        "hingeCm": { "x": 0, "y": 0 },
+        "widthCm": 90,
+        "opensInward": true,
+        "hingeSide": "bottom"
+      }
+    ],
+    "ramps": [
+      { "id": "ramp-bottom", "doorId": "door-bottom", "depthCm": 120 },
+      { "id": "ramp-left", "doorId": "door-left", "depthCm": 120 }
+    ],
+    "windows": [
+      {
+        "id": "window-north-full",
+        "wall": "top",
+        "xCm": 0,
+        "yCm": 800,
+        "widthCm": 1000,
+        "heightCm": 40
+      }
+    ],
+    "technicalCabinets": [
+      {
+        "id": "cabinet-right-1",
+        "wall": "right",
+        "xCm": 960,
+        "yCm": 260,
+        "widthCm": 40,
+        "heightCm": 140
+      }
+    ]
+  },
+  "items": []
+}
