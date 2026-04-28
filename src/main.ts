@@ -194,4 +194,8 @@ function buildApp() {
     });
 }
 
-buildApp();
+try {
+  buildApp();
+} catch (e) {
+  document.body.innerHTML = `<pre style="color:red;padding:24px;white-space:pre-wrap">App failed to start:\n${(e as Error)?.stack ?? e}</pre>`;
+}
