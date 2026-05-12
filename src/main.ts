@@ -71,9 +71,10 @@ function buildApp() {
     saveToLocalStorage(fresh);
     status.textContent = 'Reset to fresh layout.';
   });
+  const rotateBtn = button('↻', () => editor.rotateView());
 
   actions.appendChild(el('div', { className: 'row' })).append(saveBtn, pngBtn);
-  actions.appendChild(el('div', { className: 'row' })).append(fitBtn, resetBtn);
+  actions.appendChild(el('div', { className: 'row' })).append(fitBtn, resetBtn, rotateBtn);
   actions.appendChild(el('div', { className: 'row' })).append(loadInput);
 
   const editActions = el('div', { className: 'section' });

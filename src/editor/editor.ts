@@ -19,6 +19,7 @@ export type EditorApi = {
   sendBackward: () => void;
   fitToRoom: () => void;
   downloadPng: () => void;
+  rotateView: () => void;
 };
 
 export function createEditor(
@@ -36,7 +37,7 @@ export function createEditor(
   const layer = new Konva.Layer();
   stage.add(layer);
 
-  const world = createWorldTransform(layer, cfg.heightCm);
+  const world = createWorldTransform(layer, cfg.widthCm, cfg.heightCm);
 
   // Fixed
   renderRoom(world.group, { widthCm: cfg.widthCm, heightCm: cfg.heightCm });
@@ -249,10 +250,55 @@ export function createEditor(
     const margin = 20;
     const w = stage.width();
     const h = stage.height();
-    const scale = Math.min((w - margin * 2) / cfg.widthCm, (h - margin * 2) / cfg.heightCm);
+    const rot = world.getRotationDeg();
+    const roomW = rot % 180 === 0 ? cfg.widthCm : cfg.heightCm;
+    const roomH = rot % 180 === 0 ? cfg.heightCm : cfg.widthCm;
+    const scale = Math.min((w - margin * 2) / roomW, (h - margin * 2) / roomH);
     world.setScalePxPerCm(scale);
-    stage.position({ x: margin, y: margin });
+    // Trace all four corners to find bounding box
+    const H = cfg.heightCm;
+    const W = cfg.widthCm;
+    const s = scale;
+    let minX = 0, maxX = 0, minY = 0, maxY = 0;
+    // Transform function: scale -> rotate -> translate by (0, H*s)
+    const transform = (x: number, y: number) => {
+      const sx = x * s;
+      const sy = -y * s;
+      let rx, ry;
+      switch (rot % 360) {
+        case 90:
+          rx = -sy; ry = sx;
+          break;
+        case 180:
+          rx = -sx; ry = -sy;
+          break;
+        case 270:
+          rx = sy; ry = -sx;
+          break;
+        default:
+          rx = sx; ry = sy;
+          break;
+      }
+      return { x: rx, y: ry + H * s };
+    };
+    const corners = [{x:0, y:0}, {x:W, y:0}, {x:0, y:H}, {x:W, y:H}];
+    const transformed = corners.map(c => transform(c.x, c.y));
+    minX = Math.min(...transformed.map(c => c.x));
+    maxX = Math.max(...transformed.map(c => c.x));
+    minY = Math.min(...transformed.map(c => c.y));
+    maxY = Math.max(...transformed.map(c => c.y));
+    // Shift stage to bring bounding box to start at (margin, margin)
+    stage.position({
+      x: margin - minX,
+      y: margin - minY
+    });
     stage.batchDraw();
+  }
+
+  function rotateView() {
+    const next = world.getRotationDeg() + 90;
+    world.setRotationDeg(next);
+    fitToRoom();
   }
 
   function downloadPng() {
@@ -412,5 +458,6 @@ export function createEditor(
     sendBackward,
     fitToRoom,
     downloadPng,
+    rotateView,
   };
 }
