@@ -20,6 +20,7 @@ export type EditorApi = {
   fitToRoom: () => void;
   downloadPng: () => void;
   rotateView: () => void;
+  getRotation: () => number;
 };
 
 export function createEditor(
@@ -301,6 +302,10 @@ export function createEditor(
     fitToRoom();
   }
 
+  function getRotation() {
+    return world.getRotationDeg();
+  }
+
   function downloadPng() {
     const prevStagePos = stage.position();
     const prevScale = world.getScalePxPerCm();
@@ -459,5 +464,6 @@ export function createEditor(
     fitToRoom,
     downloadPng,
     rotateView,
+    getRotation,
   };
 }

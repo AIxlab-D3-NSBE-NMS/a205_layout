@@ -34,15 +34,15 @@ export type RoomConfig = {
 };
 
 export const roomConfig: RoomConfig = {
-  // 10m x 8m room (1000 cm x 800 cm)
-  widthCm: 1000,
-  heightCm: 800,
+  // 9m x 9m room (900 cm x 900 cm)
+  widthCm: 900,
+  heightCm: 900,
 
   // Blocking pillar
   // "300cm from top-left corner" => pillar top-left at (300, 800)
   // => bottom-left at (300, 700), w=50, h=100
   pillar: {
-    xCm: 300,
+    xCm: 200,
     yCm: 500,
     widthCm: 50,
     heightCm: 100,
@@ -88,8 +88,8 @@ export const roomConfig: RoomConfig = {
       id: 'window-north-full',
       wall: 'top',
       xCm: 0,
-      yCm: 800,
-      widthCm: 1000,
+      yCm: 900,
+      widthCm: 900,
       heightCm: 40,
     },
   ],
@@ -99,7 +99,7 @@ export const roomConfig: RoomConfig = {
     {
       id: 'cabinet-right-1',
       wall: 'right',
-      xCm: 960,
+      xCm: 860,
       yCm: 500,
       widthCm: 40,
       heightCm: 100,

@@ -71,10 +71,39 @@ function buildApp() {
     saveToLocalStorage(fresh);
     status.textContent = 'Reset to fresh layout.';
   });
-  const rotateBtn = button('↻', () => editor.rotateView());
+  const rotateBtn = button('↻', () => {
+    editor.rotateView();
+    updateCompass();
+  });
+
+  // Compass rose container
+  const compassContainer = el('div', {
+    attrs: {
+      style: 'width: 50px; height: 50px; position: relative; display: inline-block; vertical-align: middle; margin-left: 8px;'
+    }
+  });
+
+  function updateCompass() {
+    const rotation = editor.getRotation();
+    compassContainer.innerHTML = `
+      <svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">
+        <circle cx="50" cy="50" r="45" fill="rgba(255,255,255,0.9)" stroke="#374151" stroke-width="2"/>
+        <g transform="rotate(${rotation}, 50, 50)">
+          <line x1="50" y1="50" x2="50" y2="15" stroke="#2563eb" stroke-width="3"/>
+          <line x1="50" y1="50" x2="85" y2="50" stroke="#9ca3af" stroke-width="2"/>
+          <line x1="50" y1="50" x2="50" y2="85" stroke="#9ca3af" stroke-width="2"/>
+          <line x1="50" y1="50" x2="15" y2="50" stroke="#9ca3af" stroke-width="2"/>
+          <text x="50" y="22" text-anchor="middle" font-size="24" font-weight="bold" fill="#374151" transform="rotate(${-rotation}, 50, 22)">N</text>
+          <text x="50" y="85" text-anchor="middle" font-size="24" font-weight="bold" fill="#374151" transform="rotate(${-rotation}, 50, 85)">S</text>
+          <text x="82" y="54" text-anchor="middle" font-size="24" font-weight="bold" fill="#374151" transform="rotate(${-rotation}, 82, 54)">E</text>
+          <text x="18" y="54" text-anchor="middle" font-size="24" font-weight="bold" fill="#374151" transform="rotate(${-rotation}, 18, 54)">W</text>
+        </g>
+      </svg>
+    `;
+  }
 
   actions.appendChild(el('div', { className: 'row' })).append(saveBtn, pngBtn);
-  actions.appendChild(el('div', { className: 'row' })).append(fitBtn, resetBtn, rotateBtn);
+  actions.appendChild(el('div', { className: 'row' })).append(fitBtn, resetBtn, rotateBtn, compassContainer);
   actions.appendChild(el('div', { className: 'row' })).append(loadInput);
 
   const editActions = el('div', { className: 'section' });
@@ -131,6 +160,7 @@ function buildApp() {
   }
 
   editor = createEditor(canvasHost, roomConfig, initialLayout, onLayoutChange);
+  updateCompass();
 
   // Keyboard
   window.addEventListener('keydown', (e) => {

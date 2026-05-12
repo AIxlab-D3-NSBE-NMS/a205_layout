@@ -192,3 +192,59 @@ export function renderTechnicalCabinets(group: Konva.Group, cfg: RoomConfig) {
   }
   return shapes;
 }
+
+export function renderCompassRose(group: Konva.Group, cfg: RoomConfig) {
+  const size = 60;
+  const centerX = cfg.widthCm / 2;
+  const centerY = cfg.heightCm / 2;
+
+  const roseGroup = new Konva.Group({
+    x: centerX,
+    y: centerY,
+    listening: false,
+  });
+
+  // Draw circle background
+  const circle = new Konva.Circle({
+    radius: size / 2,
+    fill: 'rgba(255, 255, 255, 0.8)',
+    stroke: '#374151',
+    strokeWidth: 2,
+  });
+  roseGroup.add(circle);
+
+  // Draw cardinal direction labels
+  const fontSize = 16;
+  const labels = [
+    { text: 'N', x: 0, y: -size / 3 },
+    { text: 'S', x: 0, y: size / 3 },
+    { text: 'E', x: size / 3, y: 0 },
+    { text: 'W', x: -size / 3, y: 0 },
+  ];
+
+  for (const label of labels) {
+    const text = new Konva.Text({
+      x: label.x,
+      y: label.y,
+      text: label.text,
+      fontSize: fontSize,
+      fontFamily: 'Arial',
+      fontStyle: 'bold',
+      fill: '#374151',
+      offsetX: label.text.length * fontSize / 4,
+      offsetY: fontSize / 2,
+    });
+    roseGroup.add(text);
+  }
+
+  // Draw small arrows
+  const arrowSize = 8;
+  const northArrow = new Konva.Line({
+    points: [0, -size / 4, -arrowSize / 2, -size / 4 + arrowSize, arrowSize / 2, -size / 4 + arrowSize],
+    stroke: '#2563eb',
+    strokeWidth: 2,
+  });
+  roseGroup.add(northArrow);
+
+  group.add(roseGroup);
+}
